@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hamster Image Ver.</title>
+    <title>Hamster Life Deluxe</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,8 +11,8 @@
 
     <div class="game-container">
         <div class="header">
-            <h1>🐹 Hamster Bit</h1>
-            <div class="money-box">💰 <span id="money">0</span></div>
+            <h1>Mini Hamster Life</h1>
+            <div class="money-box">coin <span id="money">0</span></div>
         </div>
 
         <div class="room" id="room">
@@ -21,11 +21,11 @@
         <div class="controls">
             <div class="shop-header">
                 <h3>🛒 ร้านค้า & คำสั่ง</h3>
-                <button class="btn-reset" onclick="resetGame()">♻️ ล้าง</button>
+                <button class="btn-reset" onclick="resetGame()">♻️ ล้างเซฟ</button>
             </div>
             
-            <div class="action-bar" style="margin-bottom: 10px;">
-                <button onclick="placeFood()" style="background-color: #ff9f43; border-color: #e67e22;">
+            <div class="action-bar">
+                <button onclick="placeFood()" class="btn-food">
                     🥣 วางอาหาร (ฟรี)
                 </button>
             </div>
@@ -44,11 +44,10 @@
                     <img src="assets/fountain.png" class="shop-icon"> น้ำพุ(300)
                 </button>
                 <button onclick="buyHamster()" class="btn-pet">
-                    <img src="assets/hamster.png" class="shop-icon"> เพิ่มน้อง(500)
+                    <img src="img/hamster.png" class="shop-icon"> น้องเพิ่ม(500)
                 </button>
             </div>
         </div>
-    </div>
     </div>
 
     <div id="custom-alert" class="modal-overlay">
@@ -60,17 +59,14 @@
 
     <div id="custom-confirm" class="modal-overlay">
         <div class="modal-box">
-            <p id="confirm-msg">Sure?</p>
+            <p id="confirm-msg">ยืนยันนะ?</p>
             <div class="modal-buttons">
-                <button onclick="confirmAction()" class="btn-yes">Yes</button>
-                <button onclick="closeConfirm()" class="btn-no">No</button>
+                <button onclick="confirmAction()" class="btn-yes">ใช่เลย</button>
+                <button onclick="closeConfirm()" class="btn-no">ไม่เอา</button>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
-</body>
-</html>
     <script src="script.js"></script>
 </body>
 </html>

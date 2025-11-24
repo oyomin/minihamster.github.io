@@ -20,9 +20,16 @@
 
         <div class="controls">
             <div class="shop-header">
-                <h3>🛒 ร้านค้า</h3>
+                <h3>🛒 ร้านค้า & คำสั่ง</h3>
                 <button class="btn-reset" onclick="resetGame()">♻️ ล้าง</button>
             </div>
+            
+            <div class="action-bar" style="margin-bottom: 10px;">
+                <button onclick="placeFood()" style="background-color: #ff9f43; border-color: #e67e22;">
+                    🥣 วางอาหาร (ฟรี)
+                </button>
+            </div>
+
             <div class="shop-items">
                 <button onclick="buyItem('mushroom.png', 10)">
                     <img src="assets/mushroom.png" class="shop-icon"> เห็ด(10)
@@ -42,7 +49,28 @@
             </div>
         </div>
     </div>
+    </div>
 
+    <div id="custom-alert" class="modal-overlay">
+        <div class="modal-box">
+            <p id="alert-msg">ข้อความแจ้งเตือน</p>
+            <button onclick="closeAlert()">ตกลง</button>
+        </div>
+    </div>
+
+    <div id="custom-confirm" class="modal-overlay">
+        <div class="modal-box">
+            <p id="confirm-msg">Sure?</p>
+            <div class="modal-buttons">
+                <button onclick="confirmAction()" class="btn-yes">Yes</button>
+                <button onclick="closeConfirm()" class="btn-no">No</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
     <script src="script.js"></script>
 </body>
 </html>

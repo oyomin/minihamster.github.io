@@ -74,13 +74,52 @@ body {
 
 /* --- แฮมสเตอร์ (กำหนดขนาดกรอบที่นี่) --- */
 .hamster {
-    width: 64px; /* กำหนดขนาดความกว้างของน้อง */
+    width: 64px;
     height: 64px;
     position: absolute;
-    transition: top 3s linear, left 3s linear; 
+    /* 👇 แก้จาก 3s เป็น 8s-10s เพื่อให้เดินช้าลงมากๆ */
+    transition: top 10s linear, left 10s linear; 
     z-index: 10;
-    /* ลบ font-size ออกแล้ว */
-    animation: waddle 0.5s infinite alternate;
+    cursor: grab; /* รูปมือแบแบ */
+}
+
+/* ตอนกำลังอุ้ม (คลิกค้าง) */
+.hamster:active {
+    cursor: grabbing; /* รูปมือกำ */
+    transform: scale(1.1);
+    transition: none; /* ปิด transition เพื่อให้ลากติดมือทันที */
+    z-index: 99; /* อยู่บนสุด */
+}
+
+/* เอฟเฟกต์ Zzz (ตอนหลับ) */
+.zzz-effect {
+    position: absolute;
+    top: -20px;
+    right: -10px;
+    font-size: 16px;
+    color: #34495e;
+    font-weight: bold;
+    animation: floatZzz 2s infinite;
+    pointer-events: none;
+}
+
+@keyframes floatZzz {
+    0% { transform: translateY(0) scale(0.8); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(-20px) scale(1.2); opacity: 0; }
+}
+
+/* ชามอาหาร */
+.food-bowl {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    z-index: 5;
+    filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.5));
+}
+
+.food-bowl img {
+    width: 100%;
 }
 
 @keyframes waddle {
@@ -154,3 +193,51 @@ button {
 button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #000; }
 .btn-pet { background-color: #e74c3c; }
 .btn-reset { background-color: #7f8c8d; flex-grow: 0; width: auto;}
+
+/* ... (CSS เดิมข้างบน) ... */
+
+/* 👇 เพิ่มต่อท้ายไฟล์ 👇 */
+
+/* ฉากหลังมืดๆ เวลาเด้งเตือน */
+.modal-overlay {
+    display: none; /* ซ่อนไว้ก่อน */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* สีดำโปร่งแสง */
+    z-index: 999; /* อยู่บนสุด */
+    justify-content: center;
+    align-items: center;
+}
+
+/* ตัวกล่องข้อความ */
+.modal-box {
+    background-color: #fff;
+    border: 4px solid #2c3e50;
+    box-shadow: 10px 10px 0px #000; /* เงา Pixel หนาๆ */
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    font-family: 'Press Start 2P', cursive; /* ฟอนต์เกม */
+    font-size: 12px;
+    line-height: 1.5;
+    color: #2c3e50;
+}
+
+/* ปุ่มในกล่องข้อความ */
+.modal-box button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 10px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn-yes { background-color: #e74c3c; } /* สีแดง */
+.btn-no { background-color: #95a5a6; } /* สีเทา */

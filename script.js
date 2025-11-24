@@ -1,6 +1,8 @@
 let money = 0;
 let hamsters = [];
 let decorations = [];
+let currentFood = null; // เก็บตำแหน่งอาหาร (มีได้ทีละจาน)
+
 const moneyDisplay = document.getElementById('money');
 const room = document.getElementById('room');
 
@@ -16,13 +18,59 @@ function updateMoney(amount) {
 }
 
 // ==========================================
-// 🐹 ระบบแฮมสเตอร์ (เปลี่ยนเป็นใช้รูปภาพ)
+// 🥣 ระบบอาหาร
+// ==========================================
+
+function placeFood() {
+    if (currentFood) {
+        showAlert("มีอาหารวางอยู่แล้วนะ\nรอน้องกินหมดก่อน!");
+        return;
+    }
+
+    // สร้างอาหาร
+    const foodDiv = document.createElement('div');
+    foodDiv.classList.add('food-bowl');
+    
+    // สุ่มตำแหน่งวางอาหาร
+    const fx = Math.random() * (room.offsetWidth - 60);
+    const fy = Math.random() * (room.offsetHeight - 60);
+    
+    foodDiv.style.left = fx + 'px';
+    foodDiv.style.top = fy + 'px';
+
+    const img = document.createElement('img');
+    img.src = 'assets/food.png'; // ❗อย่าลืมหารูป food.png มาใส่นะ
+    foodDiv.appendChild(img);
+
+    room.appendChild(foodDiv);
+
+    // เก็บข้อมูลอาหารไว้บอกแฮมสเตอร์
+    currentFood = { 
+        x: fx, 
+        y: fy, 
+        element: foodDiv 
+    };
+
+    // ลบอาหารทิ้งอัตโนมัติเมื่อผ่านไป 20 วินาที (กินไม่หมดก็เน่า)
+    setTimeout(() => {
+        removeFood();
+    }, 20000);
+}
+
+function removeFood() {
+    if (currentFood && currentFood.element) {
+        currentFood.element.remove();
+        currentFood = null;
+    }
+}
+
+// ==========================================
+// 🐹 ระบบแฮมสเตอร์ (AI ใหม่)
 // ==========================================
 
 function createHamsterData() {
     const hamData = {
         id: Date.now(),
-        // เริ่มต้นสุ่มตำแหน่งที่ปลอดภัย (ไม่ชิดขอบเกินไป)
         x: Math.random() * (room.offsetWidth - 80),
         y: Math.random() * (room.offsetHeight - 80)
     };
@@ -34,51 +82,153 @@ function createHamsterData() {
 function spawnHamsterVisual(data) {
     const hamDiv = document.createElement('div');
     hamDiv.classList.add('hamster');
-    hamDiv.dataset.id = data.id;
     hamDiv.style.left = data.x + 'px';
     hamDiv.style.top = data.y + 'px';
 
-    // --- จุดเปลี่ยนสำคัญ: สร้าง tag <img> ---
     const img = document.createElement('img');
-    img.src = 'assets/hamster.png'; // ดึงรูปจากโฟลเดอร์ assets
-    hamDiv.appendChild(img); // เอารูปใส่เข้าไปในกล่อง div
-    // ------------------------------------
+    img.src = 'assets/hamster.png';
+    hamDiv.appendChild(img);
+
+    // ✋ เพิ่มระบบอุ้ม (Drag)
+    makeHamsterDraggable(hamDiv);
 
     room.appendChild(hamDiv);
+    
+    // เริ่มระบบสมองกล
     startHamsterRoutine(hamDiv);
 }
 
-function startHamsterRoutine(element) {
-    function walk() {
-        if (!document.body.contains(element)) return;
+function makeHamsterDraggable(elmnt) {
+    let isDragging = false;
+    let offset = { x: 0, y: 0 };
 
-        // คำนวณขอบเขตการเดินไม่ให้ตกขอบ (ลบด้วยขนาดตัวประมาณ 70px)
-        const newX = Math.random() * (room.offsetWidth - 70);
-        const newY = Math.random() * (room.offsetHeight - 70);
+    elmnt.onmousedown = function(e) {
+        isDragging = true;
+        elmnt.dataset.dragging = "true"; // บอก AI ว่าอย่าเพิ่งเดินเอง
+        
+        // คำนวณจุดที่จับให้ตรงกับเมาส์
+        offset.x = e.clientX - elmnt.getBoundingClientRect().left;
+        offset.y = e.clientY - elmnt.getBoundingClientRect().top;
+        
+        // หยุด Transition ชั่วคราวเพื่อให้ลากติดมือ
+        elmnt.style.transition = 'none'; 
+    };
 
-        if (newX > parseFloat(element.style.left)) {
-            element.style.transform = "scaleX(-1)"; // หันขวา
-        } else {
-            element.style.transform = "scaleX(1)"; // หันซ้าย
+    window.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        
+        const rect = room.getBoundingClientRect();
+        let newX = e.clientX - rect.left - offset.x;
+        let newY = e.clientY - rect.top - offset.y;
+
+        elmnt.style.left = newX + 'px';
+        elmnt.style.top = newY + 'px';
+    });
+
+    window.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            elmnt.dataset.dragging = "false";
+            
+            // คืนค่า Transition ให้เดินนุ่มนวลเหมือนเดิม
+            // (10s คือค่าความช้าที่ตั้งไว้ใน CSS)
+            elmnt.style.transition = 'top 10s linear, left 10s linear'; 
         }
-
-        element.style.left = newX + 'px';
-        element.style.top = newY + 'px';
-        setTimeout(walk, (Math.random() * 3000) + 4000);
-    }
-
-    function drop() {
-        if (!document.body.contains(element)) return;
-        spawnLoot(element);
-        setTimeout(drop, (Math.random() * 3000) + 3000);
-    }
-    setTimeout(walk, 100);
-    setTimeout(drop, 2000);
+    });
 }
 
+function startHamsterRoutine(element) {
+    
+    // ฟังก์ชันสุ่มเดิน / กิน / นอน
+    function think() {
+        if (!document.body.contains(element)) return; // ตายแล้วหยุดคิด
+        if (element.dataset.dragging === "true") {
+            // ถ้าโดนอุ้มอยู่ ให้รอ 1 วินาทีแล้วคิดใหม่
+            setTimeout(think, 1000); 
+            return;
+        }
+
+        // 1. เช็คว่ามีอาหารไหม (โอกาส 70% ที่จะเดินไปหาอาหาร)
+        if (currentFood && Math.random() < 0.7) {
+            walkTo(currentFood.x, currentFood.y);
+            // เดินไปถึงแล้วกิน (รอ 10 วิเพราะเดินช้า)
+            setTimeout(() => {
+                if(currentFood) showFloatingText("งั่มๆ", element.style.left, element.style.top);
+            }, 10000); 
+            
+            setTimeout(think, 12000); // กินเสร็จค่อยคิดต่อ
+            return;
+        }
+
+        // 2. เช็คว่าจะนอนไหม (โอกาส 10% - นอนนานๆ)
+        if (Math.random() < 0.1) {
+            startSleeping();
+            return;
+        }
+
+        // 3. ถ้าไม่มีอะไร เดินเล่นปกติ
+        const newX = Math.random() * (room.offsetWidth - 70);
+        const newY = Math.random() * (room.offsetHeight - 70);
+        walkTo(newX, newY);
+
+        // เดินช้ามาก รอ 11-15 วินาที ค่อยคิดใหม่
+        setTimeout(think, (Math.random() * 4000) + 11000);
+    }
+
+    function walkTo(targetX, targetY) {
+        // หันหน้า
+        if (targetX > parseFloat(element.style.left)) {
+            element.style.transform = "scaleX(-1)"; 
+        } else {
+            element.style.transform = "scaleX(1)"; 
+        }
+        element.style.left = targetX + 'px';
+        element.style.top = targetY + 'px';
+    }
+
+    function startSleeping() {
+        // สร้าง Zzz
+        const zzz = document.createElement('div');
+        zzz.classList.add('zzz-effect');
+        zzz.innerText = 'Zzz...';
+        element.appendChild(zzz);
+
+        // หยุดเดินชั่วคราว (โดยการไม่ทำอะไร)
+        
+        // ตื่นเมื่อผ่านไป 15-20 วินาที
+        const sleepTime = (Math.random() * 5000) + 15000;
+        setTimeout(() => {
+            if(zzz) zzz.remove(); // ลบ Zzz
+            think(); // ตื่นมาคิดต่อ
+        }, sleepTime);
+    }
+
+    // ฟังก์ชันดรอปของ (ทำงานแยกกับการเดิน)
+    function dropLoop() {
+        if (!document.body.contains(element)) return;
+        
+        // ถ้าไม่หลับ และ ไม่โดนอุ้ม ถึงจะดรอปของ
+        const isSleeping = element.querySelector('.zzz-effect');
+        if (!isSleeping && element.dataset.dragging !== "true") {
+            spawnLoot(element);
+        }
+
+        // ดรอปช้าลงหน่อย (5-8 วินาที)
+        setTimeout(dropLoop, (Math.random() * 3000) + 5000);
+    }
+
+    // เริ่มระบบ
+    setTimeout(think, 100);
+    setTimeout(dropLoop, 3000);
+}
+
+// ... (ฟังก์ชันอื่นๆ spawnLoot, buyItem, buyHamster, save/load ใช้ของเดิมได้เลย) ...
+
 // ==========================================
-// 🎁 ระบบของดรอป (เปลี่ยนเป็นใช้รูปภาพ)
+// 🎁 ของเดิม (SpawnLoot, Shop, etc.)
 // ==========================================
+// (ก๊อปปี้ฟังก์ชันที่เหลือจากเวอร์ชันเก่ามาใส่ตรงนี้ได้เลยครับ 
+// เพราะไม่ได้แก้อะไรสำคัญในส่วนนั้น นอกจากเรื่องดรอปของ)
 
 function spawnLoot(hamsterElement) {
     const lootDiv = document.createElement('div');
@@ -86,24 +236,16 @@ function spawnLoot(hamsterElement) {
     
     const rand = Math.random();
     let value = 0;
-    let fileName = ''; // ตัวแปรเก็บชื่อไฟล์
+    let fileName = ''; 
 
-    // กำหนดชื่อไฟล์ตามความหายาก
-    if (rand < 0.6) { 
-        fileName = 'seed.png'; value = 5; 
-    } else if (rand < 0.9) { 
-        fileName = 'cheese.png'; value = 20; 
-    } else { 
-        fileName = 'gem.png'; value = 100; 
-    }
+    if (rand < 0.6) { fileName = 'seed.png'; value = 5; } 
+    else if (rand < 0.9) { fileName = 'cheese.png'; value = 20; } 
+    else { fileName = 'gem.png'; value = 100; }
 
-    // --- สร้าง tag <img> ---
     const img = document.createElement('img');
-    img.src = 'assets/' + fileName; // เช่น assets/seed.png
+    img.src = 'assets/' + fileName;
     lootDiv.appendChild(img);
-    // ---------------------
 
-    // ปรับตำแหน่งให้ดรอปตรงกลางตัวแฮมสเตอร์พอดี
     lootDiv.style.left = (parseFloat(hamsterElement.style.left) + 15) + 'px';
     lootDiv.style.top = (parseFloat(hamsterElement.style.top) + 15) + 'px';
 
@@ -118,7 +260,6 @@ function spawnLoot(hamsterElement) {
 }
 
 function showFloatingText(txt, x, y) {
-    // (ฟังก์ชันนี้เหมือนเดิม ไม่ต้องแก้)
     const floatTxt = document.createElement('div');
     floatTxt.innerText = txt;
     floatTxt.style.position = 'absolute';
@@ -138,32 +279,27 @@ function showFloatingText(txt, x, y) {
     setTimeout(() => floatTxt.remove(), 800);
 }
 
-// ==========================================
-// 🛒 ระบบร้านค้า (รับชื่อไฟล์มาแทน Emoji)
-// ==========================================
-
 function buyHamster() {
     if (money >= 500) {
         updateMoney(-500);
         createHamsterData();
     } else {
-        alert('เงินไม่พอซื้อน้องเพิ่ม (500)');
+        showAlert('เงินไม่พอซื้อน้องเพิ่ม! \nต้องใช้ 500💰');
     }
 }
 
-// ฟังก์ชันนี้รับ fileName มาจากปุ่มใน HTML (เช่น 'house.png')
 function buyItem(fileName, price) {
     if (money >= price) {
         updateMoney(-price);
         createDecorationData(fileName);
     } else {
-        alert('เงินไม่พอจ้า');
+        showAlert('เงินไม่พอจ้า! \nไปเก็บของดรอปเพิ่มก่อนนะ');
     }
 }
 
 function createDecorationData(fileName) {
     const decoData = {
-        imageFile: fileName, // เก็บชื่อไฟล์ไว้ในข้อมูลเซฟ แทนที่จะเป็น emoji
+        imageFile: fileName,
         x: '50%',
         y: '50%'
     };
@@ -178,18 +314,13 @@ function spawnDecorationVisual(data, index) {
     itemDiv.style.left = data.x;
     itemDiv.style.top = data.y;
 
-    // --- สร้าง tag <img> สำหรับของตกแต่ง ---
     const img = document.createElement('img');
-    // ใช้ชื่อไฟล์ที่โหลดมาจากเซฟ
     img.src = 'assets/' + data.imageFile; 
-    // ถ้าเป็นบ้านหรือต้นไม้ อาจจะให้ใหญ่กว่าปกตินิดหน่อย (Optional)
     if(data.imageFile.includes('house') || data.imageFile.includes('tree')) {
          itemDiv.style.width = '90px';
     }
     itemDiv.appendChild(img);
-    // -----------------------------------
     
-    // (ระบบลากวาง เหมือนเดิม)
     let isDragging = false;
     itemDiv.onmousedown = function(e) {
         isDragging = true;
@@ -198,7 +329,6 @@ function spawnDecorationVisual(data, index) {
     window.addEventListener('mousemove', function(e) {
         if (!isDragging) return;
         const rect = room.getBoundingClientRect();
-        // ปรับจุดกึ่งกลางเวลาลากให้ตรงกับเมาส์มากขึ้น
         let newX = e.clientX - rect.left - (itemDiv.offsetWidth / 2);
         let newY = e.clientY - rect.top - (itemDiv.offsetHeight / 2);
         itemDiv.style.left = newX + 'px';
@@ -217,21 +347,16 @@ function spawnDecorationVisual(data, index) {
     room.appendChild(itemDiv);
 }
 
-// ==========================================
-// 💾 ระบบ SAVE / LOAD (อัปเดตให้รองรับชื่อไฟล์)
-// ==========================================
-
 function saveGame() {
     const gameData = {
         money: money,
         hamsters: hamsters.length,
-        decorations: decorations // ข้อมูลตรงนี้ตอนนี้เก็บชื่อไฟล์รูปภาพอยู่
+        decorations: decorations
     };
     localStorage.setItem('hamsterImageSave', JSON.stringify(gameData));
 }
 
 function loadGame() {
-    // เปลี่ยนชื่อ Save เล็กน้อยเพื่อไม่ให้ตีกับเวอร์ชัน Emoji เก่า
     const saved = localStorage.getItem('hamsterImageSave');
     if (saved) {
         const gameData = JSON.parse(saved);
@@ -258,8 +383,25 @@ function loadGame() {
 }
 
 function resetGame() {
-    if(confirm("ต้องการลบเซฟเริ่มใหม่ไหม?")) {
+    showConfirm("จะลบเซฟเริ่มใหม่จริงดิ? \n(ของหายหมดเลยนะ!)", function() {
         localStorage.removeItem('hamsterImageSave');
         location.reload();
-    }
+    });
 }
+
+function showAlert(text) {
+    document.getElementById('alert-msg').innerText = text;
+    document.getElementById('custom-alert').style.display = 'flex';
+}
+function closeAlert() { document.getElementById('custom-alert').style.display = 'none'; }
+let onConfirmCallback = null;
+function showConfirm(text, callback) {
+    document.getElementById('confirm-msg').innerText = text;
+    onConfirmCallback = callback; 
+    document.getElementById('custom-confirm').style.display = 'flex';
+}
+function confirmAction() {
+    if (onConfirmCallback) onConfirmCallback(); 
+    closeConfirm();
+}
+function closeConfirm() { document.getElementById('custom-confirm').style.display = 'none'; }

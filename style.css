@@ -1,10 +1,9 @@
 :root {
-    --bg-color: #f0e9b8;
-    --container-border: #2c3e50;
-    --header-bg: #d35400;
-    --wall-color: #3498db;
-    --floor-color: #27ae60;
-    --btn-color: #2980b9;
+    --bg-color: #679185;
+    --container-border: #000000;
+    --header-bg: #405b3e;
+    --wall-color: #88ac97;
+    --btn-color: #6f7844;
 }
 
 body {
@@ -17,7 +16,6 @@ body {
     height: 100vh;
     overflow: hidden;
     user-select: none;
-    /* สำคัญมาก: ทำให้รูป Pixel Art ขยายแล้วไม่เบลอ */
     image-rendering: pixelated; 
     font-size: 10px;
 }
@@ -36,7 +34,7 @@ body {
 .header {
     padding: 15px;
     background-color: var(--header-bg);
-    color: #f1c40f;
+    color: #dfd6ca;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -48,9 +46,10 @@ body {
     font-size: 12px;
     background: #000;
     padding: 8px 10px;
-    border: 2px solid #f1c40f;
+    border: 2px solid #dfd6ca;
 }
 
+/* ฉากห้อง */
 .room {
     height: 400px;
     background-color: var(--wall-color);
@@ -62,100 +61,78 @@ body {
     opacity: 0.95;
 }
 
-/* --- กฎรวมสำหรับรูปภาพในเกม --- */
-/* สั่งให้รูปภาพทั้งหมดที่อยู่ในตัวละคร/ไอเทม เต็มกรอบของมัน */
-.hamster img, .drop-item img, .deco-item img {
-    width: 100%;
-    height: auto;
-    display: block;
-    /* ย้าย Filter เงามาใส่ที่ตัวรูปภาพแทน */
-    filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.8));
-}
-
-/* --- แฮมสเตอร์ (กำหนดขนาดกรอบที่นี่) --- */
+/* --- แฮมสเตอร์ --- */
 .hamster {
     width: 64px;
     height: 64px;
     position: absolute;
-    /* 👇 แก้จาก 3s เป็น 8s-10s เพื่อให้เดินช้าลงมากๆ */
+    /* เดินช้าๆ 10 วินาที */
     transition: top 10s linear, left 10s linear; 
     z-index: 10;
-    cursor: grab; /* รูปมือแบแบ */
+    cursor: grab;
+    filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.5));
+}
+.hamster img { width: 100%; }
+
+/* Animation ดุ๊กดิ๊ก */
+.hamster { animation: waddle 0.5s infinite alternate; }
+@keyframes waddle {
+    from { transform: translateY(0) rotate(0deg); }
+    to { transform: translateY(-3px) rotate(5deg); }
 }
 
-/* ตอนกำลังอุ้ม (คลิกค้าง) */
+/* ตอนกำลังอุ้ม */
 .hamster:active {
-    cursor: grabbing; /* รูปมือกำ */
+    cursor: grabbing;
     transform: scale(1.1);
-    transition: none; /* ปิด transition เพื่อให้ลากติดมือทันที */
-    z-index: 99; /* อยู่บนสุด */
+    transition: none; /* ปิด transition เพื่อให้ลากติดมือ */
+    z-index: 99;
 }
 
-/* เอฟเฟกต์ Zzz (ตอนหลับ) */
+/* Zzz ตอนหลับ */
 .zzz-effect {
     position: absolute;
     top: -20px;
     right: -10px;
     font-size: 16px;
     color: #34495e;
-    font-weight: bold;
     animation: floatZzz 2s infinite;
     pointer-events: none;
 }
-
 @keyframes floatZzz {
     0% { transform: translateY(0) scale(0.8); opacity: 0; }
     50% { opacity: 1; }
     100% { transform: translateY(-20px) scale(1.2); opacity: 0; }
 }
 
-/* ชามอาหาร */
+/* อาหาร */
 .food-bowl {
-    width: 40px;
-    height: 40px;
-    position: absolute;
-    z-index: 5;
+    width: 40px; height: 40px;
+    position: absolute; z-index: 5;
     filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.5));
 }
+.food-bowl img { width: 100%; }
 
-.food-bowl img {
-    width: 100%;
-}
-
-@keyframes waddle {
-    from { transform: translateY(0) rotate(0deg); }
-    to { transform: translateY(-3px) rotate(5deg); }
-}
-
-/* --- ไอเทมดรอป (กำหนดขนาดกรอบที่นี่) --- */
+/* ของดรอป */
 .drop-item {
-    width: 32px; /* ขนาดของดรอป */
-    height: 32px;
-    position: absolute;
-    cursor: pointer;
-    z-index: 20;
+    width: 32px; height: 32px;
+    position: absolute; cursor: pointer; z-index: 20;
+    filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.8));
     animation: float 1s infinite alternate;
-    transition: transform 0.1s;
 }
+.drop-item img { width: 100%; }
+@keyframes float { from { transform: translateY(0); } to { transform: translateY(-5px); } }
 
-.drop-item:active { transform: scale(1.2); }
-
-@keyframes float {
-    from { transform: translateY(0); }
-    to { transform: translateY(-5px); }
-}
-
-/* --- ของตกแต่ง (กำหนดขนาดกรอบที่นี่) --- */
+/* ของตกแต่ง */
 .deco-item {
-    width: 64px; /* ขนาดของตกแต่งมาตรฐาน (ปรับได้) */
-    height: auto; /* สูงตามสัดส่วนรูป */
-    position: absolute;
-    cursor: grab;
-    z-index: 5;
+    width: 64px; height: auto;
+    position: absolute; cursor: grab; z-index: 5;
+    filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.5));
 }
 .deco-item:active { cursor: grabbing; transform: scale(1.05); }
+.deco-item img { width: 100%; }
 
-/* --- ร้านค้า & ไอเทมในปุ่ม --- */
+/* --- ร้านค้า --- */
 .controls {
     padding: 15px;
     background-color: #bdc3c7;
@@ -163,6 +140,7 @@ body {
 }
 
 .shop-header { display: flex; justify-content: space-between; margin-bottom: 10px;}
+.action-bar { margin-bottom: 10px; display: flex; justify-content: center; }
 h3 { margin: 0; text-shadow: 2px 2px 0px #fff; }
 .shop-items { display: flex; gap: 8px; flex-wrap: wrap; }
 
@@ -176,68 +154,31 @@ button {
     font-size: 8px;
     flex-grow: 1;
     font-family: 'Press Start 2P';
-    /* จัดเรียงรูปกับข้อความในปุ่ม */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
 }
-
-/* คลาสสำหรับรูปไอเทมเล็กๆ ในปุ่ม */
-.shop-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 5px;
-    image-rendering: pixelated;
-}
+.shop-icon { width: 16px; height: 16px; margin-right: 5px; image-rendering: pixelated;}
 
 button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #000; }
-.btn-pet { background-color: #e74c3c; }
+.btn-pet { background-color: #2a6671; }
+.btn-food { background-color: #405b3e; width: 100%; border-color: #000000; }
 .btn-reset { background-color: #7f8c8d; flex-grow: 0; width: auto;}
 
-/* ... (CSS เดิมข้างบน) ... */
-
-/* 👇 เพิ่มต่อท้ายไฟล์ 👇 */
-
-/* ฉากหลังมืดๆ เวลาเด้งเตือน */
+/* --- Alert/Modal สวยๆ --- */
 .modal-overlay {
-    display: none; /* ซ่อนไว้ก่อน */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* สีดำโปร่งแสง */
-    z-index: 999; /* อยู่บนสุด */
-    justify-content: center;
-    align-items: center;
+    display: none; position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+    justify-content: center; align-items: center;
 }
-
-/* ตัวกล่องข้อความ */
 .modal-box {
     background-color: #fff;
     border: 4px solid #2c3e50;
-    box-shadow: 10px 10px 0px #000; /* เงา Pixel หนาๆ */
-    padding: 20px;
-    width: 300px;
-    text-align: center;
-    font-family: 'Press Start 2P', cursive; /* ฟอนต์เกม */
-    font-size: 12px;
-    line-height: 1.5;
-    color: #2c3e50;
+    box-shadow: 10px 10px 0px #000;
+    padding: 20px; width: 300px;
+    text-align: center; color: #2c3e50;
+    font-size: 10px; line-height: 1.6;
 }
-
-/* ปุ่มในกล่องข้อความ */
-.modal-box button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    font-size: 10px;
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.btn-yes { background-color: #e74c3c; } /* สีแดง */
-.btn-no { background-color: #95a5a6; } /* สีเทา */
+.modal-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+.btn-yes { background-color: #2a6671; }
+.btn-no { background-color: #95a5a6; }

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamster Image Ver.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="header">
+            <h1>🐹 Hamster Bit</h1>
+            <div class="money-box">💰 <span id="money">0</span></div>
+        </div>
+
+        <div class="room" id="room">
+            </div>
+
+        <div class="controls">
+            <div class="shop-header">
+                <h3>🛒 ร้านค้า</h3>
+                <button class="btn-reset" onclick="resetGame()">♻️ ล้าง</button>
+            </div>
+            <div class="shop-items">
+                <button onclick="buyItem('mushroom.png', 10)">
+                    <img src="assets/mushroom.png" class="shop-icon"> เห็ด(10)
+                </button>
+                <button onclick="buyItem('tree.png', 50)">
+                    <img src="assets/tree.png" class="shop-icon"> ต้นไม้(50)
+                </button>
+                <button onclick="buyItem('house.png', 100)">
+                    <img src="assets/house.png" class="shop-icon"> บ้าน(100)
+                </button>
+                <button onclick="buyItem('fountain.png', 300)">
+                    <img src="assets/fountain.png" class="shop-icon"> น้ำพุ(300)
+                </button>
+                <button onclick="buyHamster()" class="btn-pet">
+                    <img src="assets/hamster.png" class="shop-icon"> เพิ่มน้อง(500)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

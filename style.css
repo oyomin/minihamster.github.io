@@ -1,4 +1,20 @@
 :root {
+    --bg-color: #81ecec;
+    --floor-color: #55efc4;
+    --ui-bg: rgba(0, 0, 0, 0.6); /* สีดำโปร่งแสง */
+    --text-color: #fff;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* ห้ามมี Scrollbar */
+    font-family: 'Press Start 2P', cursive;
+    background-color: #000;
+    width: 100vw;
+    height: 100vh;
+    user-select: none;
+    image-rendering: pixelated;:root {
     --bg-color: #679185;
     --container-border: #000000;
     --header-bg: #405b3e;
@@ -182,3 +198,145 @@ button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #000; }
 .modal-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
 .btn-yes { background-color: #2a6671; }
 .btn-no { background-color: #95a5a6; }
+}
+
+/* ฉากเต็มจอ */
+.full-room {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: var(--bg-color);
+    /* สร้างพื้นห้องหลอกๆ ด้วย Gradient */
+    background: linear-gradient(to bottom, var(--bg-color) 70%, var(--floor-color) 70%);
+    z-index: 1;
+}
+
+/* UI Layer ลอยทับฉาก */
+.ui-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; /* เพื่อให้คลิกทะลุไปโดนแฮมสเตอร์ได้ */
+    z-index: 100;
+}
+
+/* กล่องข้อมูลมุมจอ */
+.hud-box {
+    position: absolute;
+    background: var(--ui-bg);
+    color: var(--text-color);
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 10px; /* ตัวเล็กมินิมอล */
+    pointer-events: auto;
+    backdrop-filter: blur(2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.top-left { top: 15px; left: 15px; }
+.top-right { top: 15px; right: 15px; }
+
+/* แผงควบคุมด้านล่าง */
+.bottom-bar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    pointer-events: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    max-width: 90%;
+    overflow-x: auto; /* เลื่อนซ้ายขวาได้ถ้าจอมือถือเล็ก */
+}
+
+/* ปุ่มต่างๆ */
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Press Start 2P';
+    font-size: 8px;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border-radius: 8px;
+    transition: 0.2s;
+    min-width: 50px;
+}
+button:hover { background-color: rgba(0,0,0,0.05); }
+button:active { transform: scale(0.9); }
+
+.bottom-bar img { width: 20px; height: 20px; margin-bottom: 3px; }
+
+.btn-action {
+    background-color: #ffeaa7;
+    padding: 8px 10px;
+    font-weight: bold;
+
+}
+.btn-pet { background-color: #7fdff7; color: #26677a; }
+
+.separator { width: 1px; height: 30px; background: #ddd; }
+.shop-scroller { display: flex; gap: 5px; }
+
+/* ปุ่มรีเซ็ตเล็กจิ๋ว */
+.btn-mini-reset {
+    position: absolute;
+    bottom: 5px; right: 5px;
+    font-size: 8px; opacity: 0.5;
+    pointer-events: auto;
+}
+
+/* --- Elements ในฉาก (เหมือนเดิม แต่ปรับขนาดให้สมดุล) --- */
+.hamster {
+    width: 60px; height: 60px; position: absolute;
+    transition: top 10s linear, left 10s linear; 
+    z-index: 10; cursor: grab;
+    filter: drop-shadow(0 4px 0 rgba(0,0,0,0.2));
+    animation: waddle 0.6s infinite alternate;
+    touch-action: none;
+}
+.hamster img { width: 100%; pointer-events: none; }
+.hamster:active { cursor: grabbing; transform: scale(1.1); transition: none; z-index: 99;}
+
+@keyframes waddle { from {transform: rotate(-3deg) translateY(0);} to {transform: rotate(3deg) translateY(-2px);} }
+
+.drop-item {
+    width: 30px; height: 30px; position: absolute; cursor: pointer; z-index: 20;
+    animation: float 1.5s infinite alternate;
+}
+.drop-item img { width: 100%; }
+@keyframes float { from {transform: translateY(0);} to {transform: translateY(-5px);} }
+
+.deco-item { width: 60px; position: absolute; cursor: grab; z-index: 5; touch-action: none;}
+.deco-item img { width: 100%; pointer-events: none; }
+.food-bowl { width: 40px; position: absolute; z-index: 5; }
+.food-bowl img { width: 100%; }
+.zzz-effect {
+    position: absolute; top: -15px; right: 0;
+    font-size: 14px; color: #2d3436; font-weight: bold;
+    animation: zzz 2s infinite; pointer-events: none;
+}
+@keyframes zzz { 0%{opacity:0; transform:translateY(0);} 50%{opacity:1;} 100%{opacity:0; transform:translateY(-15px);} }
+
+/* Modal Minimal */
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 200;
+    justify-content: center; align-items: center;
+}
+.modal-box {
+    background: #fff; padding: 15px; border-radius: 10px;
+    text-align: center; max-width: 250px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    font-size: 10px; line-height: 1.5;
+}
+.modal-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+.modal-box button { background: #eee; min-width: 40px; }

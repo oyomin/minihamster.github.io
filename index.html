@@ -2,6 +2,57 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hamster Fullscreen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="room" class="full-room">
+        </div>
+
+    <div class="ui-layer">
+        
+        <div class="hud-box top-left">
+            👁️ <span id="view-count">0</span>
+        </div>
+
+        <div class="hud-box top-right">
+            💰 <span id="money">0</span>
+        </div>
+
+        <button class="btn-mini-reset" onclick="resetGame()">♻️</button>
+
+        <div class="bottom-bar">
+            <button onclick="placeFood()" class="btn-action">🥣 ให้อาหาร</button>
+            
+            <div class="separator"></div>
+
+            <div class="shop-scroller">
+                <button onclick="buyItem('mushroom.png', 10)">
+                    <img src="assets/mushroom.png"> 10
+                </button>
+                <button onclick="buyItem('tree.png', 50)">
+                    <img src="assets/tree.png"> 50
+                </button>
+                <button onclick="buyItem('house.png', 100)">
+                    <img src="assets/house.png"> 100
+                </button>
+                <button onclick="buyItem('fountain.png', 300)">
+                    <img src="assets/fountain.png"> 300
+                </button>
+                <button onclick="buyHamster()" class="btn-pet">
+                    <img src="assets/hamster.png"> +น้อง(500)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-alert" cla<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hamster Life Deluxe</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -63,6 +114,25 @@
             <div class="modal-buttons">
                 <button onclick="confirmAction()" class="btn-yes">ใช่เลย</button>
                 <button onclick="closeConfirm()" class="btn-no">ไม่เอา</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>ss="modal-overlay">
+        <div class="modal-box">
+            <p id="alert-msg"></p>
+            <button onclick="closeAlert()">OK</button>
+        </div>
+    </div>
+
+    <div id="custom-confirm" class="modal-overlay">
+        <div class="modal-box">
+            <p id="confirm-msg"></p>
+            <div class="modal-buttons">
+                <button onclick="confirmAction()" class="btn-yes">Yes</button>
+                <button onclick="closeConfirm()" class="btn-no">No</button>
             </div>
         </div>
     </div>
